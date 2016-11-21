@@ -57,7 +57,7 @@ namespace laser
 
         // FIXME: I would like to add some inputs for maximum time or maximum distance.
         // I could add a boolean return if it meets the input requirements.
-        void optimize();
+        void optimize(int passes);
 
         // Returns the current route. This will be an optimized route if the optimize function has been used.
         Route * getRoute();

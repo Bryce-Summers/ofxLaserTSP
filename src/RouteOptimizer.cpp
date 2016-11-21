@@ -45,17 +45,17 @@ namespace laser
     {
     }
 
-    Route * RouteOptimizer::optimize()
+    Route * RouteOptimizer::optimize(int passes)
     {
 
         cout << "Metric Before Optimization = " << metric(nodes) << endl;
-        aplyOptimizationPasses();
+        aplyOptimizationPasses(passes);
         cout << "Metric After Optimization = " << metric(nodes) << endl;
 
         return toRoute();
     }
 
-    void RouteOptimizer::aplyOptimizationPasses()
+    void RouteOptimizer::aplyOptimizationPasses(int passes)
     {
         // Do some optimization here...
         int len = nodes.size();
@@ -80,7 +80,7 @@ namespace laser
         // Try swapping route pointers...
         // O(n^3)
         //for(int pass = 0; pass < 2; pass++)
-        for (int pass = 0; pass < 5; pass++)
+        for (int pass = 0; pass < passes; pass++)
         {
             for (int i1 = 0; i1 < len; i1++)
             for (int i2 = i1 + 1; i2 < len; i2++)

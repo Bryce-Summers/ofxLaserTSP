@@ -11,9 +11,9 @@ void ofApp::setup(){
     // because they are currently not considered in the algorithm.
     
     // We generate a random 10 route, using a random seed for consistent testing.
-    ofSeedRandom(0);
+    ofSeedRandom(seed);
 
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < num_random_tests; i++)
     {
         optimizeRandomRoute(width, height);
     }
@@ -24,23 +24,32 @@ void ofApp::optimizeRandomRoute(int width, int height)
 {
     laser::Route * route = new laser::Route();
 
-    int path_num = 30;
+    int path_num = this -> num_paths;
 
     for (int i = 0; i < path_num; i++)
     {
         laser::Polyline * path = new laser::Polyline();
         for (int i = 0; i < 2; i++)
         {
-            path->push_back(ofPoint(ofRandom(width), ofRandom(height)));
+            float x = ofRandom(width);
+            float y = ofRandom(height);
+            path -> push_back(ofPoint(x, y));
+            
+            int offset = 40;
+
+            // Extra Points to test out internal processing.
+            path -> push_back(ofPoint(x + offset, y));
+            path -> push_back(ofPoint(x + offset, y + offset));
+            path -> push_back(ofPoint(x    , y + offset));
         }
         route -> push_back(path);
     }
 
     program = new laser::LaserProgram(route);
-    program->optimize();
-    this->route = program->getRoute();
+    program -> optimize(this -> passes);
+    this -> route = program -> getRoute();
 
-    this->commands = program->getCommandList();
+    this -> commands = program -> getCommandList();
 }
 
 //--------------------------------------------------------------
@@ -64,11 +73,13 @@ void ofApp::drawRoute()
     ofPath p;// The path.
     p.setStrokeColor(color);
     p.setStrokeWidth(strokeWidth);
+    p.setFilled(false);
     
 
     ofPath p_connectors;// The connection paths.
     p_connectors.setStrokeColor(128);
     p_connectors.setStrokeWidth(strokeWidth / 2);
+    p_connectors.setFilled(false);
 
 
     // Draws the given paths, while also drawing the connecting routes between them in dual.
@@ -76,7 +87,7 @@ void ofApp::drawRoute()
     auto first_line_iter = iter;
     auto first_point_iter = (*first_line_iter) -> cbegin();
     p_connectors.moveTo(*first_point_iter);
-    for (; iter != route->cend(); ++iter)
+    for (; iter != route -> cend(); ++iter)
     {
         laser::Polyline * polyline = *iter;
 
@@ -101,13 +112,14 @@ void ofApp::drawRoute()
 
 void ofApp::drawCommandList()
 {
-    std::vector<ofPath> paths;// The path.
-    bool draw = false;
-    ofPath * p = NULL;
+    ofPath p;
+    p.setFilled(false);
 
     ofPath p_connectors;
     p_connectors.setStrokeColor(128);
     p_connectors.setStrokeWidth(strokeWidth / 2);
+
+    bool draw = false;
     bool start = false;
     ofPoint point_start;
 
@@ -119,14 +131,15 @@ void ofApp::drawCommandList()
         {
             case laser::OFF:
 
+                p.draw();
                 // Prepare to draw a new path.
                 draw = false;
 
+                p.clear();
                 // Use your favorite original path index to color conversion procedure.
-                paths.push_back(ofPath());
-                p = &paths.back();
-                p -> setStrokeColor((command.ID*23) % 100);
-                p -> setStrokeWidth(6 + (command.ID * 23) % 5);
+                
+                p.setStrokeColor((command.ID*23) % 100);
+                p.setStrokeWidth(6 + (command.ID * 23) % 5);
                 
                 continue;
 
@@ -145,12 +158,12 @@ void ofApp::drawCommandList()
 
                 if (draw)
                 {
-                    p -> lineTo(command.pt);
+                    p.lineTo(command.pt);
                     p_connectors.moveTo(command.pt);
                 }
                 else
                 {
-                    p -> moveTo(command.pt);
+                    p.moveTo(command.pt);
                     p_connectors.lineTo(command.pt);
                 }
 
@@ -160,12 +173,7 @@ void ofApp::drawCommandList()
 
     p_connectors.lineTo(point_start);
 
-    // Draw all of the paths.
-    for (auto iter = paths.cbegin(); iter != paths.cend(); iter++)
-    {
-        (*iter).draw();
-    }
-
+    p.draw();
     p_connectors.draw();
 }
 

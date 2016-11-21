@@ -78,13 +78,13 @@ namespace laser
     // -- Instructs the LaserProgram to Optimize its route.
     // Updates the internal route pointer to a new route.
     // It frees the original route.
-    void LaserProgram::optimize()
+    void LaserProgram::optimize(int passes)
     {
         // For deletion later.
         Route * old_route = route;
 
         RouteOptimizer optimizer(this -> route);
-        this -> route = optimizer.optimize();
+        this -> route = optimizer.optimize(passes);
 
         // Get the permutation for concerned artists who want their original colors.
         optimizer.populatePermutation(path_permutation);

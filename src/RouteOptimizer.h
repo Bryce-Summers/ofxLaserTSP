@@ -25,7 +25,7 @@ namespace laser
 
         // Returns a heuristically optimized route.
         // This is guranteed to be a new route in memory.
-        Route * optimize();
+        Route * optimize(int passes);
 
         void populatePermutation(std::vector<int> &permutation);
 
@@ -47,7 +47,7 @@ namespace laser
         float metric(std::vector<RouteNode> nodes);
 
         // This is where I design the macro optimization passes.
-        void aplyOptimizationPasses();
+        void aplyOptimizationPasses(int passes);
 
         // Returns a consistent heuristic for the length of a path from points[id1] to points[id2].
         float metric(int id1, int id2);

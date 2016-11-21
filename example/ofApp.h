@@ -34,4 +34,10 @@ class ofApp : public ofBaseApp{
         void ofApp::drawRoute();
         void ofApp::drawCommandList();
         void ofApp::optimizeRandomRoute(int width, int height);
+
+        // Testing.
+        int num_random_tests = 20; // How many optimization tests do you want to do using randomly generated routes?
+        int seed = 0; // Which random seed do you want to use in your tests? Tests dependant on screen resolution...
+        int num_paths = 30; // The number of paths you want to put in each of the random routes.
+        int passes = 5; // Optimize through 5 swap passes, each of which attempt n choose 2 local swap procedures.
 };

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>;
+#include "ofMain.h";
+
 /*
 * A series of Typedefs in one place to make the Type descriptions better.
 * This also imports all of the Laser .h files.
