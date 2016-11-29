@@ -10,7 +10,7 @@
  * Written by Bryce Summers on 11/18/2016.
  */
 
-namespace laser
+namespace bryce_tsp
 {
 
     class RouteOptimizer

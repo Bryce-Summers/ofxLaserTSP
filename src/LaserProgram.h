@@ -7,7 +7,7 @@
 
 #include <vector>;
 
-namespace laser
+namespace bryce_tsp
 {
 
     // Laser Commands tell the robot to turn on the laser, turn off the laser,
@@ -64,6 +64,9 @@ namespace laser
 
         // Converts the current route into a command list form.
         Program * getCommandList();
+
+        // Determines the index of the given index in the original data after the optimization permutation has been applied.
+        int lookup_original_index(int current_index);
 
     // Optimization functions.
     private:
