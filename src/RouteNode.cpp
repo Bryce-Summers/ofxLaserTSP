@@ -1,6 +1,6 @@
 #include "RouteNode.h"
 
-namespace laser
+namespace bryce_tsp
 {
     RouteNode::RouteNode(int id, int pid1, int pid2)
     {

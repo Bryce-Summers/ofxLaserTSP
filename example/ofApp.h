@@ -3,41 +3,53 @@
 #include "ofMain.h"
 #include "../src/LaserMain.h"
 
-class ofApp : public ofBaseApp{
+struct PolylinePlus {
+    ofPolyline polyline; // assume there will always be a field called 'polyline'
+    float r;
+    float g;
+    float b;
+    float lineThickness;
+    float someOtherStuff;
+};
 
-	public:
-		void setup();
-		void update();
-		void draw();
 
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
+class ofApp : public ofBaseApp {
 
-        laser::LaserProgram * program;
-        laser::Route * route;
-        laser::Program * commands;
+public:
+    void setup();
+    void update();
+    void draw();
 
-        // Black in grayscale.
-        int color = 0;
-        float strokeWidth = 2.0;
+    void keyPressed(int key);
+    void keyReleased(int key);
+    void mouseMoved(int x, int y);
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    void mouseEntered(int x, int y);
+    void mouseExited(int x, int y);
+    void windowResized(int w, int h);
+    void dragEvent(ofDragInfo dragInfo);
+    void gotMessage(ofMessage msg);
 
-        // Example drawing functions that use output from the LaserProgram Optimizer.
-        void ofApp::drawRoute();
-        void ofApp::drawCommandList();
-        void ofApp::optimizeRandomRoute(int width, int height);
+    void populateExampleVectorOfPolylines();
+    void optimizeDrawing(int passes = 4);
+    float computeLengthOfDrawing(vector<PolylinePlus> aDrawing);
 
-        // Testing.
-        int num_random_tests = 20; // How many optimization tests do you want to do using randomly generated routes?
-        int seed = 0; // Which random seed do you want to use in your tests? Tests dependant on screen resolution...
-        int num_paths = 30; // The number of paths you want to put in each of the random routes.
-        int passes = 5; // Optimize through 5 swap passes, each of which attempt n choose 2 local swap procedures.
+    vector<PolylinePlus>	theRawDrawing;
+    vector<PolylinePlus>	tempDrawing;
+    vector<PolylinePlus>	theOptimizedDrawing;
+
+    float drawingLength;
+    bool bDoit;
+
+    // Conversion functions between Polyline Plus vectors and the Routes used in bryce_tsp.
+    void convert_polyline_plus_to_route(vector<PolylinePlus> & path_list, bryce_tsp::Route & route);
+    void convert_route_to_polyline_plus(vector<PolylinePlus>    * path_in,
+                                        bryce_tsp::Route        * route_in,
+                                        bryce_tsp::LaserProgram * permuter,
+                                        vector<PolylinePlus>    * path_out);
+
+    // Copies all of the polyline plus data, except for the ofPolyline data.
+    void copy_extra_polyline_plus_data(PolylinePlus & src, PolylinePlus & dest);
 };

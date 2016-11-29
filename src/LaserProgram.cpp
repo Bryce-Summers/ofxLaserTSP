@@ -1,11 +1,11 @@
 #include "LaserProgram.h"
 
-namespace laser
+namespace bryce_tsp
 {
     
     LaserProgram::LaserProgram(Route * route)
     {
-        this -> route = route;
+        this -> route = copy(route);
     }
 
 
@@ -92,6 +92,10 @@ namespace laser
         delete old_route;
     }
 
+    int LaserProgram::lookup_original_index(int current_index)
+    {
+        return path_permutation[current_index];
+    }
 
 
 }

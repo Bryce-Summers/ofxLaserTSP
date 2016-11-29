@@ -1,6 +1,6 @@
 #pragma once
 
-namespace laser
+namespace bryce_tsp
 {
     class RouteNode
     {

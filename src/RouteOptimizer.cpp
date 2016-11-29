@@ -1,7 +1,7 @@
 #include "RouteOptimizer.h"
 #include <stdexcept>
 
-namespace laser
+namespace bryce_tsp
 {
 
     RouteOptimizer::RouteOptimizer(Route * route)
