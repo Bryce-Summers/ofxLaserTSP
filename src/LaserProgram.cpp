@@ -6,6 +6,11 @@ namespace bryce_tsp
     LaserProgram::LaserProgram(Route * route)
     {
         this -> route = copy(route);
+
+        for (int i = 0; i < route -> size(); i++)
+        {
+            path_permutation.push_back(i);
+        }
     }
 
 
@@ -80,6 +85,11 @@ namespace bryce_tsp
     // It frees the original route.
     void LaserProgram::optimize(int passes)
     {
+        if (passes <= 0)
+        {
+            return;
+        }
+
         // For deletion later.
         Route * old_route = route;
 

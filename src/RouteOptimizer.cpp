@@ -12,7 +12,7 @@ namespace bryce_tsp
         points.clear();
 
         int id  = 0; // next Route ID.
-        int pid = 0;// next Point ID.
+        int pid = 0; // next Point ID.
 
         // Allocate all of the Route Nodes and Points.
         for (auto iter = route -> cbegin(); iter != route -> cend(); ++iter)
@@ -48,9 +48,9 @@ namespace bryce_tsp
     Route * RouteOptimizer::optimize(int passes)
     {
 
-        cout << "Metric Before Optimization = " << metric(nodes) << endl;
+        //cout << "Metric Before Optimization = " << metric(nodes) << endl;
         aplyOptimizationPasses(passes);
-        cout << "Metric After Optimization = " << metric(nodes) << endl;
+        //cout << "Metric After Optimization = " << metric(nodes) << endl;
 
         return toRoute();
     }
@@ -60,7 +60,8 @@ namespace bryce_tsp
         // Do some optimization here...
         int len = nodes.size();
 
-        float score = std::numeric_limits<float>::max();
+        // Original Metric.
+        float score = metric(nodes);
 
         // Optimize through routeNode flipping.
         // O(n).
@@ -96,8 +97,10 @@ namespace bryce_tsp
 
             }
 
-            cout << "Metric After Pass " << pass << " = " << metric(nodes) << endl;
+            //cout << "Metric After Pass " << pass << " = " << metric(nodes) << endl;
         }
+
+        //cout << "Metric After Pass " << passes << " = " << metric(nodes) << endl;
 
         return;
     }
@@ -107,13 +110,18 @@ namespace bryce_tsp
         Route * output = new Route();
 
         // Convert RouteOptimizer Structures back to a route representation.
-        for (auto iter = nodes.begin(); iter != nodes.end(); ++iter)
+
+        RouteNode * first   = &(nodes.front());
+        RouteNode * current = first;
+        do
         {
-            RouteNode & node = *iter;
-            int ID = node.id;
+            int ID = current -> id;
             Polyline * polyline = this -> route -> at(ID);
-            if (node.flipped)
-            {
+            
+            // NOTE: We could easily make an output format that gives the users the flipped bools, instead of flipped lists.
+            // I like the lists, because we could potentially chop up paths in the future for other applications.
+            if (current -> flipped) 
+            { 
                 polyline = reverse(polyline);
             }
             else
@@ -122,7 +130,10 @@ namespace bryce_tsp
             }
 
             output -> push_back(polyline);
-        }
+
+            // Iterate.
+            current = current -> next;
+        }while(current != first);
 
         return output;
     }
@@ -215,6 +226,8 @@ namespace bryce_tsp
     {
         // Accumulator.
         float accum = 0.0f;
+        // Warning, this is going in arbitrary original order, because the order that we add the segments up doesn't matter.
+        // If you change this to rely on the permuted ordering of nodes, transverse this using next pointers.
         for (auto iter = nodes.begin(); iter != nodes.end(); ++iter)
         {
             RouteNode * node = &(*iter);
@@ -235,7 +248,7 @@ namespace bryce_tsp
         ofPoint p2 = points[id2];
         
         // FIXME: Square distance would be faster.
-        return p1.distance(p2);
+        return ofDist(p1.x, p1.y, p2.x, p2.y);
     }
 
     void RouteOptimizer::populatePermutation(std::vector<int> &permutation)

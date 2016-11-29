@@ -52,7 +52,7 @@ namespace bryce_tsp
 
         for (auto iter = route->rbegin(); iter != route->rend(); ++iter)
         {
-            output->push_back(*iter);
+            output -> push_back(*iter);
         }
 
         return output;

@@ -10,7 +10,7 @@ namespace bryce_tsp
 
         bool marked = false;
 
-                // A route is assumed to consist of "domino" nodes linked between each other.
+        // A route is assumed to consist of "domino" nodes linked between each other.
         // These nodes contain indices into point data arrays.
         // Consider the route A -> B -> C
         // The polylines would be:

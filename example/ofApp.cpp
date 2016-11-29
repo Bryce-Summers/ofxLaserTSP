@@ -11,7 +11,8 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
     if (bDoit) {
-        optimizeDrawing();
+        //optimizeDrawing(4);
+        bDoit = false;
     }
 }
 
@@ -24,14 +25,22 @@ void ofApp::optimizeDrawing(int passes) {
     convert_polyline_plus_to_route(theRawDrawing, route_in);
 
     bryce_tsp::LaserProgram program(&route_in);
-    program.optimize(passes);
 
-    bryce_tsp::Route * route_out = program.getRoute();
+    for (int i = 0; i <= passes; i++)
+    {
+        program.optimize(i);
 
-    theOptimizedDrawing.clear();
-    convert_route_to_polyline_plus(&theRawDrawing, route_out, &program, &theOptimizedDrawing);
+        bryce_tsp::Route * route_out = program.getRoute();
 
-    delete route_out;
+        theOptimizedDrawing.clear();
+        convert_route_to_polyline_plus(&theRawDrawing, route_out, &program, &theOptimizedDrawing);
+
+        delete route_out;
+
+        drawingLength = computeLengthOfDrawing(theOptimizedDrawing);
+
+        cout << "Length after pass " << i <<" = " << drawingLength << endl;
+    }
 }
 
 void ofApp::convert_polyline_plus_to_route(vector<PolylinePlus> & path_list, bryce_tsp::Route & route)
@@ -57,6 +66,8 @@ void ofApp::convert_route_to_polyline_plus(
         bryce_tsp::Polyline * polyline = route_in -> at(new_index);
         path_out -> push_back(PolylinePlus());
         PolylinePlus & out = path_out -> back();
+
+        out.polyline.clear();
 
         // Copy over the polyline.
         for (auto pt = polyline -> cbegin(); pt != polyline -> cend(); ++pt)
@@ -183,16 +194,17 @@ float ofApp::computeLengthOfDrawing(vector<PolylinePlus> aDrawing) {
 
     float len = 0;
     int nPolylinePlusses = aDrawing.size();
-    for (int i = 0; i<nPolylinePlusses; i++) {
+    for (int i = 0; i < nPolylinePlusses; i++) {
         PolylinePlus aPolylinePlus = aDrawing[i];
         ofPolyline aPolyline = aPolylinePlus.polyline;
         len += aPolyline.getPerimeter();
-        if (i<(nPolylinePlusses - 1)) {
-            ofPoint lastOfThis = aPolyline[aPolyline.size() - 1];
-            ofPoint firstOfNext = (aDrawing[i + 1].polyline)[0];
-            float dist = ofDist(lastOfThis.x, lastOfThis.y, firstOfNext.x, firstOfNext.y);
-            len += dist;
-        }
+        
+        ofPoint lastOfThis = aPolyline[aPolyline.size() - 1];
+        ofPoint firstOfNext = (aDrawing[(i + 1) % nPolylinePlusses].polyline)[0];
+        float dist = ofDist(lastOfThis.x, lastOfThis.y, firstOfNext.x, firstOfNext.y);
+        
+        len += dist;
+        
     }
     return len;
 }
