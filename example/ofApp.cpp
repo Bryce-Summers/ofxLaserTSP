@@ -101,13 +101,12 @@ void ofApp::draw() {
         aPolyline.draw();
 
         // draw indicator from end of this line, to start of next
-        if (i<(nPolylinePlusses - 1)) {
-            ofSetColor(255, 0, 0, 160);
-            ofSetLineWidth(1.0);
-            ofPoint lastPointOfThis = aPolyline[aPolyline.size() - 1];
-            ofPoint firstPointOfNext = (theOptimizedDrawing[i + 1].polyline)[0];
-            ofDrawLine(lastPointOfThis, firstPointOfNext);
-        }
+        ofSetColor(255, 0, 0, 160);
+        ofSetLineWidth(1.0);
+        ofPoint lastPointOfThis = aPolyline[aPolyline.size() - 1];
+        ofPoint firstPointOfNext = (theOptimizedDrawing[(i + 1) % nPolylinePlusses].polyline)[0];
+        ofDrawLine(lastPointOfThis, firstPointOfNext);
+
     }
 
     ofPopMatrix();
