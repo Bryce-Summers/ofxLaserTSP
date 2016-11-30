@@ -4,9 +4,11 @@
 namespace bryce_tsp
 {
 
-    RouteOptimizer::RouteOptimizer(Route * route)
+    RouteOptimizer::RouteOptimizer(Route * route, bool closed)
     {
         this -> route = route;
+        this -> closed = closed;
+        int start_index = 0;
 
         nodes.clear();
         points.clear();
@@ -111,7 +113,10 @@ namespace bryce_tsp
 
         // Convert RouteOptimizer Structures back to a route representation.
 
-        RouteNode * first   = &(nodes.front());
+        // retrive the start index, such that we start after the most distant edge.
+        this -> start_index = getLongestEdgeIndex(nodes);
+
+        RouteNode * first   = &nodes[this -> start_index];
         RouteNode * current = first;
         do
         {
@@ -222,6 +227,7 @@ namespace bryce_tsp
     // global metric.
     // Returns a consistent for how long the path is.
     // We wish to minimize this value.
+    // We use this metric for open and closed problems, then simply remove the longest edge afterwards.
     float RouteOptimizer::metric(std::vector<RouteNode> nodes)
     {
         // Accumulator.
@@ -235,10 +241,42 @@ namespace bryce_tsp
             // Point Indices.
             int p0 = node -> index_end;
             int p1 = node -> next -> index_start;
+
             accum += metric(p0, p1);
         }
 
         return accum;
+    }
+
+    int RouteOptimizer::getLongestEdgeIndex(std::vector<RouteNode> nodes)
+    {
+        int index = -1;
+        float max = std::numeric_limits<float>::min();
+        int len = nodes.size();
+        for (int i = 0; i < len; i++)
+        {
+            RouteNode * node = &nodes[i];
+            RouteNode * next = node -> next;
+
+            // Point Indices.
+            int p0 = node -> index_end;
+            int p1 = next -> index_start;
+
+            float dist = metric(p0, p1);
+
+            if (dist > max)
+            {
+                index = next -> id;
+                max = dist;
+            }
+        }
+
+        if (index < 0)
+        {
+            throw new std::runtime_error("No maximum edge distance was found.");
+        }
+
+        return index;
     }
 
     // Returns a consistent heuristic for the length of a path from id1 to id2.
@@ -256,7 +294,7 @@ namespace bryce_tsp
         permutation.clear();
 
         // ASSERTION( This loop goes n times, where n = nodes.length;
-        RouteNode * start = &nodes[0];
+        RouteNode * start = &nodes[this -> start_index];
         RouteNode * current = start;
         do
         {

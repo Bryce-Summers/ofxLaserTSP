@@ -3,9 +3,10 @@
 namespace bryce_tsp
 {
     
-    LaserProgram::LaserProgram(Route * route)
+    LaserProgram::LaserProgram(Route * route, bool closed)
     {
         this -> route = copy(route);
+        this -> closed = closed;
 
         for (int i = 0; i < route -> size(); i++)
         {
@@ -26,6 +27,8 @@ namespace bryce_tsp
         return copy(route);
     }
 
+    // Note: This command list is valid for closed and open paths,
+    // because closure is a function of user interpretation.
     Program * LaserProgram::getCommandList()
     {
         Program * program = new Program();
@@ -93,10 +96,10 @@ namespace bryce_tsp
         // For deletion later.
         Route * old_route = route;
 
-        RouteOptimizer optimizer(this -> route);
+        RouteOptimizer optimizer(this -> route, this -> closed);
         this -> route = optimizer.optimize(passes);
 
-        // Get the permutation for concerned artists who want their original colors.
+        // Get the permutation for concerned artists who want their original colors, strokes, etc.
         optimizer.populatePermutation(path_permutation);
 
         delete old_route;
@@ -106,6 +109,4 @@ namespace bryce_tsp
     {
         return path_permutation[current_index];
     }
-
-
 }

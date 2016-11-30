@@ -42,6 +42,7 @@ public:
 
     float drawingLength;
     bool bDoit;
+    bool closed = false;
 
     // Conversion functions between Polyline Plus vectors and the Routes used in bryce_tsp.
     void convert_polyline_plus_to_route(vector<PolylinePlus> & path_list, bryce_tsp::Route & route);

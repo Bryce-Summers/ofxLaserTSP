@@ -41,6 +41,7 @@ namespace bryce_tsp
     private:
         // Private Route object.
         Route * route;
+        bool closed;
 
         // path_permutations[route[id]] = id of route in original input.
         std::vector<int> path_permutation;
@@ -48,7 +49,7 @@ namespace bryce_tsp
     public:
         // ASSUMES: route allocated via new. The Laser Program now owns the input route and will deal with deallocation.
         // ASSUMES: every route contains at least 2 points.
-        LaserProgram(Route * route);
+        LaserProgram(Route * route, bool closed = true);
         ~LaserProgram();
 
         // -- Instructs the LaserProgram to Optimize its route.
