@@ -33,7 +33,8 @@ namespace bryce_tsp
         // This is guranteed to be a new route in memory.
         Route * optimize(int passes);
 
-        void populatePermutation(std::vector<int> &permutation);
+        // Permutes the given permutation by the permutation constructed by this RouteOptimizer.
+        void permute(std::vector<int> &permutation);
 
     private:
         // A local allocation of memory for all of the route nodes,
@@ -66,6 +67,7 @@ namespace bryce_tsp
         // float metric(int id1_p, int id1, int id2, int id2_p);
 
         // Converts from this RouteOptimizer's internal structures back to a route representation.
+        // User is responsible for managing the returned memory.
         Route * toRoute();
 
     };

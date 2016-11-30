@@ -100,9 +100,9 @@ namespace bryce_tsp
         this -> route = optimizer.optimize(passes);
 
         // Get the permutation for concerned artists who want their original colors, strokes, etc.
-        optimizer.populatePermutation(path_permutation);
+        optimizer.permute(path_permutation);
 
-        delete old_route;
+        bryce_tsp::free_route(old_route);
     }
 
     int LaserProgram::lookup_original_index(int current_index)

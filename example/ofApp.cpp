@@ -11,7 +11,7 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
     if (bDoit) {
-        optimizeDrawing(4);
+        optimizeDrawing(this -> passes);
         bDoit = false;
     }
 }
@@ -20,11 +20,12 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::optimizeDrawing(int passes) {
 
-    bryce_tsp::Route route_in;
+    bryce_tsp::Route * route_in = new bryce_tsp::Route();
 
-    convert_polyline_plus_to_route(theRawDrawing, route_in);
+    convert_polyline_plus_to_route(&theRawDrawing, route_in);
 
-    bryce_tsp::LaserProgram program(&route_in, this -> closed);
+    bryce_tsp::LaserProgram program(route_in, this -> closed);
+    bryce_tsp::free_route(route_in);
 
     for (int i = 0; i <= passes; i++)
     {
@@ -35,21 +36,23 @@ void ofApp::optimizeDrawing(int passes) {
         theOptimizedDrawing.clear();
         convert_route_to_polyline_plus(&theRawDrawing, route_out, &program, &theOptimizedDrawing);
 
-        delete route_out;
+        bryce_tsp::free_route(route_out);
 
         drawingLength = computeLengthOfDrawing(theOptimizedDrawing);
 
         cout << "Length after " << i << "passes = " << drawingLength << endl;
     }
+
+
 }
 
-void ofApp::convert_polyline_plus_to_route(vector<PolylinePlus> & path_list, bryce_tsp::Route & route)
+void ofApp::convert_polyline_plus_to_route(vector<PolylinePlus> * path_list, bryce_tsp::Route * route)
 {
-    for (auto iter = path_list.begin(); iter != path_list.end(); ++iter)
+    for (auto iter = path_list -> begin(); iter != path_list -> end(); ++iter)
     {
         ofPolyline * polyline_in = &(iter -> polyline);
         bryce_tsp::Polyline * polyline_out = bryce_tsp::of_polyline_to_polyline(polyline_in);
-        route.push_back(polyline_out);
+        route -> push_back(polyline_out);
     }
 }
 
@@ -61,7 +64,8 @@ void ofApp::convert_route_to_polyline_plus(
 {
     // Transcribe each of the input Polyline Plus paths into output Polyline Plus paths.
     // using information from the optimizer.
-    for (int new_index = 0; new_index < route_in -> size(); new_index++)
+    int len = route_in -> size();
+    for (int new_index = 0; new_index < len; new_index++)
     {
         bryce_tsp::Polyline * polyline = route_in -> at(new_index);
         path_out -> push_back(PolylinePlus());
@@ -174,12 +178,12 @@ void ofApp::populateExampleVectorOfPolylines() {
         }
 
         PolylinePlus aPolylinePlus;
+
         aPolylinePlus.polyline = aPolyline;
-        aPolylinePlus.r = 0;
-        aPolylinePlus.g = 0;
-        aPolylinePlus.b = 0;
-        aPolylinePlus.lineThickness = 4;
-        aPolylinePlus.lineThickness = ((i <= 3) ? 10 : 4);
+        aPolylinePlus.r = ((i <= 3) ? 0 : 100);
+        aPolylinePlus.g = ((i <= 3) ? 200 : 0);
+        aPolylinePlus.b = ((i <= 3) ? 0 : 160);
+        aPolylinePlus.lineThickness = ((i <= 3) ? 16 : 3);
 
         theRawDrawing.push_back(aPolylinePlus);
     }

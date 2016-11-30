@@ -127,11 +127,11 @@ namespace bryce_tsp
             // I like the lists, because we could potentially chop up paths in the future for other applications.
             if (current -> flipped) 
             { 
-                polyline = reverse(polyline);
+                polyline = reverse_polyline(polyline);
             }
             else
             {
-                polyline = copy(polyline);
+                polyline = copy_polyline(polyline);
             }
 
             output -> push_back(polyline);
@@ -289,10 +289,13 @@ namespace bryce_tsp
         return ofDist(p1.x, p1.y, p2.x, p2.y);
     }
 
-    void RouteOptimizer::populatePermutation(std::vector<int> &permutation)
+    void RouteOptimizer::permute(std::vector<int> & permutation_in_out)
     {
-        permutation.clear();
+        
+        std::vector<int> permutation;
+        std::vector<int> permutation_out;
 
+        // First compute the relative permutation from the input route to this optimizer to the present route.
         // ASSERTION( This loop goes n times, where n = nodes.length;
         RouteNode * start = &nodes[this -> start_index];
         RouteNode * current = start;
@@ -301,6 +304,22 @@ namespace bryce_tsp
             permutation.push_back(current -> id);
             current = current -> next;
         } while (current != start);
+
+        // Next permute the input permutation by the relative permutation.
+        // i is the local index -> relative index -> global index.
+        int len = permutation_in_out.size();
+        for (int i = 0; i < len; i++)
+        {
+            int relative_index = permutation[i];
+            int global_index   = permutation_in_out[relative_index];
+            permutation_out.push_back(global_index);
+        }
+
+        // Finnally copy the resultant global permutation onto the input_output buffer.
+        for (int i = 0; i < len; i++)
+        {
+            permutation_in_out[i] = permutation_out[i];
+        }
 
         return;
     }
