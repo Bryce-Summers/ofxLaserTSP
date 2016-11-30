@@ -1,6 +1,9 @@
 # ofxLaserTSP
 
-Unfinished. Optimizes the traveling salesman problem for a set of double ended paths.
+Optimizes the traveling salesman problem for a set of double ended paths.
+
+# Status
+Being tested in practice now.
 
 # Closed problem (Cycle).
 ![alt text](https://github.com/Bryce-Summers/ofxLaserTSP/blob/master/screenshots/Skeleton_Optimization_closed.png "Skeleton Optimization Closed Problem Image")
