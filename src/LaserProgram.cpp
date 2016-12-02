@@ -17,7 +17,7 @@ namespace bryce_tsp
 
     LaserProgram::~LaserProgram()
     {
-        delete this -> route;
+        bryce_tsp::free_route(this -> route);
     }
 
     Route * LaserProgram::getRoute()
